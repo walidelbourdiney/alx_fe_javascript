@@ -99,34 +99,35 @@ document.addEventListener("DOMContentLoaded", () => {
     reader.readAsText(file);
   }
 
-  function fetchQuotesFromServer() {
-    fetch("https://jsonplaceholder.typicode.com/posts") // Mock API endpoint
-      .then((response) => response.json())
-      .then((serverQuotes) => {
-        const serverQuoteTexts = new Set(serverQuotes.map((q) => q.title));
+  // Use async and await for the fetch function
+  async function fetchQuotesFromServer() {
+    try {
+      const response = await fetch(
+        "https://jsonplaceholder.typicode.com/posts"
+      ); // Mock API endpoint
+      const serverQuotes = await response.json();
 
-        // Conflict Resolution: Server data takes precedence
-        const mergedQuotes = [
-          ...quotes,
-          ...serverQuotes.filter((q) => !serverQuoteTexts.has(q.title)),
-        ];
+      const serverQuoteTexts = new Set(serverQuotes.map((q) => q.title));
 
-        if (mergedQuotes.length !== quotes.length) {
-          quotes = mergedQuotes;
-          saveQuotes();
-          showSyncNotification(
-            "Data synced with the server, local changes updated."
-          );
-        }
+      // Conflict Resolution: Server data takes precedence
+      const mergedQuotes = [
+        ...quotes,
+        ...serverQuotes.filter((q) => !serverQuoteTexts.has(q.title)),
+      ];
 
-        populateCategories();
-        showRandomQuote();
-      })
-      .catch(() => {
+      if (mergedQuotes.length !== quotes.length) {
+        quotes = mergedQuotes;
+        saveQuotes();
         showSyncNotification(
-          "Failed to sync with the server. Using local data."
+          "Data synced with the server, local changes updated."
         );
-      });
+      }
+
+      populateCategories();
+      showRandomQuote();
+    } catch {
+      showSyncNotification("Failed to sync with the server. Using local data.");
+    }
   }
 
   function showSyncNotification(message) {
