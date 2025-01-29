@@ -147,7 +147,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const responseData = await response.json();
       console.log("Server response:", responseData);
-      showSyncNotification("Quotes synced with the server successfully.");
+      showSyncNotification("Quotes synced with the server successfully!"); // This message was missing
     } catch (error) {
       console.error("Error syncing data to server:", error);
       showSyncNotification("Error syncing data to server.");
