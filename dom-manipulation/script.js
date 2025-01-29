@@ -161,8 +161,14 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 5000);
   }
 
+  // New syncQuotes function to handle syncing both fetch and post operations
+  async function syncQuotes() {
+    await fetchQuotesFromServer();
+    await postQuotesToServer();
+  }
+
   // Sync every 10 seconds (simulation of periodic syncing)
-  setInterval(fetchQuotesFromServer, 10000);
+  setInterval(syncQuotes, 10000);
 
   newQuoteBtn.addEventListener("click", showRandomQuote);
   categoryFilter.addEventListener("change", filterQuotes);
