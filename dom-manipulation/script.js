@@ -40,12 +40,12 @@ document.addEventListener("DOMContentLoaded", () => {
         : quotes.filter((q) => q.category === categoryFilter.value);
 
     if (filteredQuotes.length === 0) {
-      quoteDisplay.innerHTML = "<p>No quotes available in this category.</p>";
+      quoteDisplay.textContent = "No quotes available in this category.";
       return;
     }
 
     const randomIndex = Math.floor(Math.random() * filteredQuotes.length);
-    quoteDisplay.innerHTML = `<p>"${filteredQuotes[randomIndex].text}"</p><p><em>- ${filteredQuotes[randomIndex].category}</em></p>`;
+    quoteDisplay.textContent = `"${filteredQuotes[randomIndex].text}" - ${filteredQuotes[randomIndex].category}`;
   }
 
   function filterQuotes() {
