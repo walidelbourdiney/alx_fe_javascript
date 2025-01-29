@@ -130,6 +130,30 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  async function postQuotesToServer() {
+    try {
+      const response = await fetch(
+        "https://jsonplaceholder.typicode.com/posts",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(quotes),
+        }
+      );
+
+      if (!response.ok) throw new Error("Failed to sync with server");
+
+      const responseData = await response.json();
+      console.log("Server response:", responseData);
+      showSyncNotification("Quotes synced with the server successfully.");
+    } catch (error) {
+      console.error("Error syncing data to server:", error);
+      showSyncNotification("Error syncing data to server.");
+    }
+  }
+
   function showSyncNotification(message) {
     syncStatus.textContent = message;
     setTimeout(() => {
