@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const quotes = [
+  const quotes = JSON.parse(localStorage.getItem("quotes")) || [
     {
       text: "The best way to predict the future is to create it.",
       category: "Motivation",
