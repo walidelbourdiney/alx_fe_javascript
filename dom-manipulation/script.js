@@ -14,6 +14,9 @@ document.addEventListener("DOMContentLoaded", () => {
     },
   ];
 
+  function saveQuotes() {
+    localStorage.setItem("quotes", JSON.stringify(quotes));
+  }
   const quoteDisplay = document.getElementById("quoteDisplay");
   const newQuoteBtn = document.getElementById("newQuote");
   const container = document.body;
@@ -42,6 +45,7 @@ document.addEventListener("DOMContentLoaded", () => {
         .value.trim();
       if (quoteText && quoteCategory) {
         quotes.push({ text: quoteText, category: quoteCategory });
+        saveQuotes();
         document.getElementById("quoteText").value = "";
         document.getElementById("quoteCategory").value = "";
         alert("Quote added successfully!");
@@ -49,6 +53,39 @@ document.addEventListener("DOMContentLoaded", () => {
     });
     container.appendChild(form);
   }
+  document
+    .getElementById("exportQuotes")
+    .addEventListener("click", function () {
+      const dataStr = JSON.stringify(quotes, null, 2);
+      const blob = new Blob([dataStr], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "quotes.json";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    });
+
+  document
+    .getElementById("importFile")
+    .addEventListener("change", function (event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        try {
+          const importedQuotes = JSON.parse(e.target.result);
+          quotes.push(...importedQuotes);
+          saveQuotes();
+          alert("Quotes imported successfully!");
+          showRandomQuote();
+        } catch (error) {
+          alert("Invalid JSON file");
+        }
+      };
+      reader.readAsText(file);
+    });
 
   newQuoteBtn.addEventListener("click", showRandomQuote);
   createAddQuoteForm();
