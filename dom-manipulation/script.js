@@ -17,6 +17,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const quoteDisplay = document.getElementById("quoteDisplay");
   const newQuoteBtn = document.getElementById("newQuote");
   const categoryFilter = document.getElementById("categoryFilter");
+  const syncStatus = document.getElementById("syncStatus");
 
   function saveQuotes() {
     localStorage.setItem("quotes", JSON.stringify(quotes));
@@ -98,6 +99,46 @@ document.addEventListener("DOMContentLoaded", () => {
     reader.readAsText(file);
   }
 
+  function fetchQuotesFromServer() {
+    fetch("https://jsonplaceholder.typicode.com/posts") // Mock API endpoint
+      .then((response) => response.json())
+      .then((serverQuotes) => {
+        const serverQuoteTexts = new Set(serverQuotes.map((q) => q.title));
+
+        // Conflict Resolution: Server data takes precedence
+        const mergedQuotes = [
+          ...quotes,
+          ...serverQuotes.filter((q) => !serverQuoteTexts.has(q.title)),
+        ];
+
+        if (mergedQuotes.length !== quotes.length) {
+          quotes = mergedQuotes;
+          saveQuotes();
+          showSyncNotification(
+            "Data synced with the server, local changes updated."
+          );
+        }
+
+        populateCategories();
+        showRandomQuote();
+      })
+      .catch(() => {
+        showSyncNotification(
+          "Failed to sync with the server. Using local data."
+        );
+      });
+  }
+
+  function showSyncNotification(message) {
+    syncStatus.textContent = message;
+    setTimeout(() => {
+      syncStatus.textContent = "";
+    }, 5000);
+  }
+
+  // Sync every 10 seconds (simulation of periodic syncing)
+  setInterval(fetchQuotesFromServer, 10000);
+
   newQuoteBtn.addEventListener("click", showRandomQuote);
   categoryFilter.addEventListener("change", filterQuotes);
   document
@@ -112,4 +153,5 @@ document.addEventListener("DOMContentLoaded", () => {
 
   populateCategories();
   showRandomQuote();
+  fetchQuotesFromServer();
 });
